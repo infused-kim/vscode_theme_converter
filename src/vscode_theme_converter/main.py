@@ -1,81 +1,41 @@
-import plistlib
-import sys
+from pathlib import Path
 
-import json5
+import typer
 
+from .vscode_theme import VSCodeTheme
 
-def add_settings(tm_theme_default_settings, vsc_theme_colors):
-    mappings = {
-        "editorCursor.foreground": "caret",
-        "editor.selectionBackground": "selection",
-        "editor.lineHighlightBackground": "lineHighlight",
-        "editor.foreground": "foreground",
-        "editor.background": "background",
-        "editorWhitespace.foreground": "invisibles",
-    }
-
-    for vsc_key, tm_key in mappings.items():
-        if vsc_key in vsc_theme_colors:
-            tm_theme_default_settings[tm_key] = vsc_theme_colors[vsc_key]
+app = typer.Typer(
+    help=(
+        'VSCode Theme Converter - Convert VSCode themes to other formats.\n\n'
+        'Run a command with --help to see its options.'
+    ),
+    no_args_is_help=True,  # Show help if no command is given
+)
 
 
-def convert(vsc_theme, input_file=None):
-    theme_name = vsc_theme.get("name")
-    if not theme_name and input_file:
-        # Extract filename without extension as default name
-        theme_name = input_file.split("/")[-1].split(".")[0]
+@app.command()
+def convert(
+    input_file: Path = typer.Argument(
+        ..., help='VSCode theme file (.json or .jsonc)'
+    ),
+    output_file: Path = typer.Argument(
+        ..., help='Output TextMate theme file (.tmTheme)'
+    ),
+) -> None:
+    """Convert a VSCode theme to TextMate format."""
+    # Load and convert theme
+    theme = VSCodeTheme.from_json(input_file)
+    tm_theme = theme.to_tm_theme()
 
-    tm_theme = {
-        "name": theme_name or "Converted VSCode Theme",
-        "settings": vsc_theme["tokenColors"],
-    }
-
-    default_settings = next(
-        (setting for setting in tm_theme["settings"] if "scope" not in setting), None
-    )
-
-    if not default_settings:
-        tm_theme["settings"].insert(0, {"settings": {}})
-
-    tm_theme_default_settings = tm_theme["settings"][0]["settings"]
-    vsc_theme_colors = vsc_theme["colors"]
-
-    add_settings(tm_theme_default_settings, vsc_theme_colors)
-
-    new_settings = []
-    for setting in tm_theme["settings"][1:]:
-        if "scope" in setting:
-            scope = setting["scope"]
-            if isinstance(scope, list):
-                for individual_scope in scope:
-                    new_settings.append(
-                        {
-                            "scope": str(individual_scope),
-                            "settings": setting["settings"].copy(),
-                        }
-                    )
-            else:
-                setting["scope"] = str(scope)
-                new_settings.append(setting)
-        else:
-            new_settings.append(setting)
-
-    tm_theme["settings"] = [tm_theme["settings"][0]] + new_settings
-    return tm_theme
+    # Save converted theme
+    tm_theme.to_tm_theme(output_file)
+    typer.echo(f'Successfully converted {input_file} to {output_file}')
 
 
-def main():
-    if len(sys.argv) != 3:
-        print("Usage: python vscToTm.py <input_file> <output_file>")
-        sys.exit(1)
-
-    input_file = sys.argv[1]
-    with open(input_file, "r", encoding="utf-8") as f:
-        vsc_theme = json5.loads(f.read())
-
-    with open(sys.argv[2], "wb") as f:
-        plistlib.dump(convert(vsc_theme, input_file), f)
+def main() -> None:
+    """CLI entry point."""
+    app()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

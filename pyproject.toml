@@ -12,6 +12,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "json5",
+    "pydantic>=2.0.0",
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "vscode_theme_converter"
+authors = [{ name = "Kim Streich" }]
+description = "Convert VSCode themes to terminal theme files"
+readme = "README.md"
+
+requires-python = ">=3.10"
+dependencies = [
+    "json5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "mypy",
+    "pre-commit",
+    "bandit",
+    "ipython",
+]
+
+[project.urls]
+"Repository" = "https://github.com/infused-kim/vscode_theme_converter"
+
+[project.scripts]
+vscode_theme_converter = "vscode_theme_converter.main:main"
+
+
+# Create a dynamic version from git tags
+[tool.setuptools_scm]
+version_file = "src/vscode_theme_converter/_version.py"
+version_scheme = "post-release"
+local_scheme = "node-and-date"
+
+
+# Configure ruff for linting
+[tool.ruff]
+line-length = 79
+exclude = ["misc/*.py"]
+
+[tool.ruff.lint]
+extend-select = [
+    "E501", # line-too-long
+]
+preview = true
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+docstring-code-format = true
+
+
+# Configure mypy for static type checking
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+exclude = ['misc/']
+
+[tool.pyright]
+ignore = ["misc/_*.py"]

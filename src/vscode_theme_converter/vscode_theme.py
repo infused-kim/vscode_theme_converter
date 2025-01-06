@@ -17,6 +17,38 @@ class TokenColor(BaseModel):
     settings: TokenColorSettings
 
 
+class Colors(BaseModel):
+    """Expected colors in a VSCode theme."""
+
+    class Config:
+        populate_by_name = True
+
+    # Editor colors
+    editor_foreground: str | None = Field(None, alias='editor.foreground')
+    editor_background: str | None = Field(None, alias='editor.background')
+    editor_cursor_foreground: str | None = Field(
+        None, alias='editorCursor.foreground'
+    )
+    editor_selection_background: str | None = Field(
+        None, alias='editor.selectionBackground'
+    )
+    editor_line_highlight_background: str | None = Field(
+        None, alias='editor.lineHighlightBackground'
+    )
+    editor_whitespace_foreground: str | None = Field(
+        None, alias='editorWhitespace.foreground'
+    )
+
+    # Terminal colors
+    terminal_foreground: str | None = Field(None, alias='terminal.foreground')
+    terminal_cursor_foreground: str | None = Field(
+        None, alias='terminalCursor.foreground'
+    )
+
+    # Additional colors
+    other_colors: dict[str, str] = Field(default_factory=dict)
+
+
 class VSCodeTheme(BaseModel):
     """
     Model representing a VSCode color theme JSONC file.
@@ -42,7 +74,7 @@ class VSCodeTheme(BaseModel):
     semantic_token_colors: dict[str, str] | None = Field(
         None, alias='semanticTokenColors'
     )
-    colors: dict[str, str]
+    colors: Colors
     token_colors: list[TokenColor] = Field(alias='tokenColors')
 
     @model_validator(mode='after')

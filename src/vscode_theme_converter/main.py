@@ -4,7 +4,7 @@ import typer
 from rich import print as rprint
 from rich.style import Style
 
-from .ansi_mapping import AnsiMapping, ColorMapping
+from .ansi_mapping import AnsiColor, AnsiMapping, ColorMapping
 from .contrast import get_contrast_ratio, get_contrast_ratio_rating
 from .vscode_theme import VSCodeTheme
 
@@ -117,6 +117,41 @@ def ansi_map_show(
                     typer.echo(f'    - {scope}')
 
             typer.echo('')  # Empty line between colors
+
+
+@app.command()
+def print_terminal_colors() -> None:
+    """Show how the current terminal colors look."""
+    # Print header
+    typer.echo('\nCurrent Terminal Colors:\n')
+
+    # Print each color
+    for base_color in [
+        'BLACK',
+        'RED',
+        'GREEN',
+        'YELLOW',
+        'BLUE',
+        'MAGENTA',
+        'CYAN',
+        'WHITE',
+    ]:
+        # Normal variant
+        color_num = getattr(AnsiColor, base_color)
+        rprint(
+            f'    [on color({color_num})]    [/]  ',
+            f'[color({color_num})]{base_color.lower()}[/]',
+        )
+
+        # Bright variant
+        bright_num = getattr(AnsiColor, f'{base_color}_BRIGHT')
+        rprint(
+            f'    [on color({bright_num})]    [/]  ',
+            f'[color({bright_num})]{base_color.lower()} bright[/]',
+        )
+
+        # Empty line between color pairs
+        typer.echo('')
 
 
 @app.command()

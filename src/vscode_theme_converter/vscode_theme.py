@@ -5,6 +5,7 @@ import json5
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Self
 
+from .ansi_mapping import AnsiMapping, ColorMapping
 from .tm_theme import (
     TMTheme,
     TMThemeGlobalSettings,
@@ -149,4 +150,28 @@ class VSCodeTheme(BaseModel):
         return TMTheme(
             name=self.name or 'Converted Theme',
             settings=[{'settings': global_settings}, *rules],
+        )
+
+    def generate_ansi_mapping(self) -> AnsiMapping:
+        """Generate initial ANSI color mappings from theme colors."""
+        token_color_mappings: dict[str, ColorMapping] = {}
+
+        # Collect colors from token colors
+        for token in self.token_colors:
+            if token.settings.foreground:
+                color = token.settings.foreground
+                if color not in token_color_mappings:
+                    token_color_mappings[color] = ColorMapping(
+                        color_code=color
+                    )
+                if token.scope:
+                    token_color_mappings[color].scopes.append(
+                        token.scope
+                        if isinstance(token.scope, str)
+                        else ', '.join(token.scope)
+                    )
+
+        return AnsiMapping(
+            theme_name=self.name or 'Unnamed Theme',
+            token_color_mappings=token_color_mappings,
         )

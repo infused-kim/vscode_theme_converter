@@ -5,6 +5,7 @@ from rich import print as rprint
 from rich.style import Style
 
 from .ansi_mapping import AnsiMapping, ColorMapping
+from .contrast import get_contrast_ratio, get_contrast_ratio_rating
 from .vscode_theme import VSCodeTheme
 
 app = typer.Typer(
@@ -14,6 +15,10 @@ app = typer.Typer(
     ),
     no_args_is_help=True,
 )
+
+#
+# CLI Commands
+#
 
 
 @app.command()
@@ -112,6 +117,69 @@ def ansi_map_show(
                     typer.echo(f'    - {scope}')
 
             typer.echo('')  # Empty line between colors
+
+
+@app.command()
+def check_contrast(
+    background_color: str = typer.Argument(..., help='Background color (hex)'),
+    foreground_colors: list[str] = typer.Argument(
+        ..., help='Foreground colors (hex)'
+    ),
+) -> None:
+    """
+    Check contrast ratio between background and multiple foreground colors.
+    """
+
+    try:
+        bg_style = get_color_style(None, background_color)
+        rprint(f'Background: {background_color} [{bg_style}]■■■■[/]\n')
+    except Exception as e:
+        rprint(f'[red]Error:[/] {e}')
+        return
+
+    rprint('Foreground Colors:')
+    for color in foreground_colors:
+        try:
+            fg_style = get_color_style(color, background_color)
+        except Exception as e:
+            rprint(f'\t{color} is invalid: {e}')
+            continue
+
+        try:
+            ratio = get_contrast_ratio(color, background_color)
+            rating = get_contrast_ratio_rating(ratio)
+        except Exception:
+            ratio = -1
+            rating = '(N/A)'
+
+        rprint(
+            f'\t[{fg_style}]{color:<8} ■■■■[/]',
+            f' → {ratio:4.1f} {rating}',
+        )
+
+
+#
+# Helper Functions
+#
+
+
+def get_color_style(color: str | None, bg_color: str | None) -> Style:
+    """Get a Rich Style object for a color."""
+
+    def ensure_hex_prefix(c: str | None) -> str | None:
+        if c is not None and len(c) == 6 and c.startswith('#') is False:
+            return f'#{c}'
+        return c
+
+    color = ensure_hex_prefix(color)
+    bg_color = ensure_hex_prefix(bg_color)
+
+    return Style(color=color, bgcolor=bg_color)
+
+
+#
+# CLI Entry Point
+#
 
 
 def main() -> None:

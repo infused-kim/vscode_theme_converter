@@ -80,6 +80,7 @@ class AnsiColor:
     # Class-level storage
     _by_name: ClassVar[dict[AnsiColorName, 'AnsiColor']] = {}
     _by_num: ClassVar[dict[AnsiColorNum, 'AnsiColor']] = {}
+    _by_family: ClassVar[list['AnsiColor']] = []
     _initialized: ClassVar[bool] = False
 
     def __init__(self, name: AnsiColorName) -> None:
@@ -158,6 +159,11 @@ class AnsiColor:
         """
         return f'#{self.num:02x}000000'
 
+    @property
+    def sort_order_by_family(self) -> int:
+        """Get index in family ordering."""
+        return self._by_family.index(self)
+
     #
     # Class methods
     #
@@ -168,10 +174,32 @@ class AnsiColor:
         if cls._initialized:
             return
 
+        # Create all colors first
         for color_name in AnsiColorName:
             color = cls(color_name)
             cls._by_name[color_name] = color
             cls._by_num[color_name.value] = color
+
+        # Build family order list
+        cls._by_family = [
+            cls._by_num[AnsiColorName.BACKGROUND.value],
+            cls._by_num[AnsiColorName.FOREGROUND.value],
+        ]
+
+        base_colors_names = [
+            color_name
+            for color_name in AnsiColorName
+            if color_name.value < 8 and color_name.value >= 0
+        ]
+
+        for color_name in base_colors_names:
+            # Normal color
+            cls._by_family.append(cls._by_num[color_name.value])
+
+            # Bright variant
+            cls._by_family.append(
+                cls._by_num[cast(AnsiColorNum, color_name.value + 8)]
+            )
 
         cls._initialized = True
 
@@ -212,20 +240,8 @@ class AnsiColor:
 
     @classmethod
     def iter_by_family(cls) -> Iterator['AnsiColor']:
-        """
-        Iterate through colors grouped by family.
-
-        Returns colors in order: BLACK, BLACK_BRIGHT, RED, RED_BRIGHT, etc.
-        """
-        base_colors = (color for color in AnsiColorName if color.value < 8)
-
-        for color in base_colors:
-            # Normal color
-            yield cls._by_num[color.value]
-
-            # Bright variant
-            if color.value >= 0:
-                yield cls._by_num[cast(AnsiColorNum, color.value + 8)]
+        """Iterate through colors in family order."""
+        return iter(cls._by_family)
 
 
 # Create all standard colors

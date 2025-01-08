@@ -99,11 +99,11 @@ def ansi_map_show(
     typer.echo(f'\nToken color mappings for theme: {mapping.theme_name}\n')
 
     def sort_key(item: tuple[str, ColorMapping]) -> tuple[int, str]:
-        """Sort by ANSI color name, with unmapped last."""
+        """Sort by color family order, with unmapped last."""
         _, color_map = item
         if color_map.ansi_color is None:
-            return (1, '')  # Unmapped colors go last
-        return (0, color_map.ansi_color.name)
+            return (999, '')  # Unmapped colors go last
+        return (color_map.ansi_color.sort_order_by_family, '')
 
     # Print each color's info
     for idx, (color_code, color_map) in enumerate(

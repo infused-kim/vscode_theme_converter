@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import ClassVar, Iterator, Literal, Self, cast
 
 from pydantic import BaseModel, Field, field_serializer, field_validator
+from rich.color import Color
 from rich.style import Style
 
 from .terminal import get_terminal_ansi_color
@@ -15,6 +16,10 @@ from .terminal import get_terminal_ansi_color
 
 class AnsiColorName(Enum):
     """Names of standard ANSI colors."""
+
+    # Special colors (-2 to -1)
+    BACKGROUND = -2
+    FOREGROUND = -1
 
     # Normal colors (0-7)
     BLACK = 0
@@ -38,7 +43,29 @@ class AnsiColorName(Enum):
 
 
 # Define a new type for ANSI color numbers
-AnsiColorNum = Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+AnsiColorNum = Literal[
+    # Special colors
+    -2,
+    -1,
+    # Normal colors
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    # Bright colors
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+]
 
 
 class AnsiColor:
@@ -73,12 +100,27 @@ class AnsiColor:
         """Get the color code, or a default if none."""
         return self.color_code or if_none
 
-    def get_rich_style(self, bgcolor: str | None = None) -> Style:
+    def get_rich_style(
+        self, bgcolor: str | None = None
+    ) -> Style | Literal['normal']:
         """Return a rich style for this color and set background color."""
-        return Style(color=f'color({self.num})', bgcolor=bgcolor)
+        color = f'color({self.num})'
+
+        if self.num < 0:
+            if self.color_code is not None:
+                color = self.color_code
+            else:
+                color = Color.default()
+
+        style = Style(color=color, bgcolor=bgcolor)
+
+        if style == Style():
+            style = 'normal'
+
+        return style
 
     @property
-    def rich_style(self) -> Style:
+    def rich_style(self) -> Style | Literal['normal']:
         """Return a rich style for this color."""
         return self.get_rich_style()
 
@@ -86,6 +128,21 @@ class AnsiColor:
     def is_bright(self) -> bool:
         """Whether this is a bright variant."""
         return self.num >= 8
+
+    @property
+    def is_special(self) -> bool:
+        """Whether this is a special color."""
+        return self.num < 0
+
+    @property
+    def is_background(self) -> bool:
+        """Whether this is the background color."""
+        return self.num == AnsiColorName.BACKGROUND.value
+
+    @property
+    def is_foreground(self) -> bool:
+        """Whether this is the foreground color."""
+        return self.num == AnsiColorName.FOREGROUND.value
 
     @property
     def base_color(self) -> 'AnsiColor':
@@ -167,7 +224,8 @@ class AnsiColor:
             yield cls._by_num[color.value]
 
             # Bright variant
-            yield cls._by_num[cast(AnsiColorNum, color.value + 8)]
+            if color.value >= 0:
+                yield cls._by_num[cast(AnsiColorNum, color.value + 8)]
 
 
 # Create all standard colors

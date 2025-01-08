@@ -149,11 +149,16 @@ def print_terminal_colors() -> None:
     def print_color(
         color_code: str,
         bg_color_code: str | None,
-        style: Style,
+        style: Style | str,
         title: str,
+        is_background: bool = False,
     ) -> None:
         contrast_info = ''
-        if bg_color_code is not None and color_code is not None:
+        if (
+            bg_color_code is not None
+            and color_code is not None
+            and is_background is False
+        ):
             contrast_ratio = get_contrast_ratio(color_code, bg_color_code)
             contrast_rating = get_contrast_ratio_rating(contrast_ratio)
             contrast_info = f'\t→ {contrast_ratio:4.1f} ({contrast_rating})'
@@ -172,21 +177,6 @@ def print_terminal_colors() -> None:
     bg_color_code = get_terminal_background_color()
     fg_color_code = get_terminal_foreground_color()
 
-    # Print terminal default colors
-    if bg_color_code is not None:
-        print_color(bg_color_code, None, Style(), 'Background')
-
-    if fg_color_code is not None:
-        print_color(
-            fg_color_code,
-            bg_color_code,
-            Style(color=fg_color_code),
-            'Foreground',
-        )
-
-    if bg_color_code is not None or fg_color_code is not None:
-        typer.echo('')
-
     # Print each color family
     for color in AnsiColor.iter_by_family():
         print_color(
@@ -194,10 +184,11 @@ def print_terminal_colors() -> None:
             bg_color_code,
             color.rich_style,
             color.title,
+            color.is_background,
         )
 
         # Add space between families if this was a bright variant
-        if color.is_bright:
+        if color.is_bright or color.is_foreground:
             typer.echo('')
 
 

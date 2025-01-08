@@ -13,7 +13,11 @@ import tty
 
 
 def get_terminal_ansi_color(ansi_color_num: int) -> str | None:
-    """Query terminal for ANSI color using OSC 4."""
+    """Query terminal for ANSI color."""
+    if ansi_color_num == -1:
+        return get_terminal_foreground_color()
+    elif ansi_color_num == -2:
+        return get_terminal_background_color()
     return _query_osc_color(4, ansi_color_num)
 
 

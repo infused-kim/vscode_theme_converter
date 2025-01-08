@@ -1,8 +1,8 @@
 from pathlib import Path
-from typing import Literal, Union
+from typing import Any, Literal
 
 import json5
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
 from .ansi_mapping import AnsiMapping, ColorMapping
@@ -20,8 +20,10 @@ class TokenColorSettings(BaseModel):
 
 
 class TokenColor(BaseModel):
+    """A syntax highlighting rule."""
+
     name: str | None = None
-    scope: Union[str, list[str]] | None = None
+    scope: str | None = None
     settings: TokenColorSettings
 
 
@@ -220,3 +222,47 @@ class VSCodeTheme(BaseModel):
                     token.settings.foreground = ansi_color.ansi_hex
 
         return ansi_theme
+
+    @field_validator('token_colors', mode='before')
+    @classmethod
+    def normalize_token_colors(
+        cls, token_colors: list[dict[str, Any]]
+    ) -> list[TokenColor]:
+        """
+        Some VSCode themes import other themes and override their token
+        colors, but the `Generate Color Theme` command doesn't deduplicate
+        the scopes.
+
+        VSCode just uses the last instance of a scope.
+
+        So we need to do the same thing here. We do it at parsing time because
+        it reduces the number of colors we need to map to convert to ANSI.
+
+        Normalize token colors by:
+        1. Splitting list-based scopes into separate rules
+        2. Keeping only the last rule for each scope
+        """
+        # Track the last rule for each scope
+        scope_map: dict[str, TokenColor] = {}
+
+        for token_data in token_colors:
+            name = token_data.get('name')
+            scopes = token_data.get('scope')
+            settings = token_data.get('settings')
+
+            # Skip rules without scopes or settings
+            if scopes is None or settings is None:
+                continue
+
+            if isinstance(scopes, str):
+                scopes = [scopes]
+
+            for scope in scopes:
+                rule = TokenColor(
+                    name=name,
+                    scope=scope,
+                    settings=settings,
+                )
+                scope_map[scope] = rule
+
+        return list(scope_map.values())

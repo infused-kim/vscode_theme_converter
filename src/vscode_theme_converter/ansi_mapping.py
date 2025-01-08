@@ -94,6 +94,13 @@ class AnsiColor:
             return self.from_num(cast(AnsiColorNum, self.num - 8))
         return self
 
+    @property
+    def ansi_hex(self) -> str:
+        """
+        Get the hex code that encodes this ANSI color number.
+        """
+        return f'#{self.num:02x}000000'
+
     #
     # Class methods
     #

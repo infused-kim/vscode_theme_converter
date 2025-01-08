@@ -33,9 +33,24 @@ def convert(
     output_file: Path = typer.Argument(
         ..., help='Output TextMate theme file (.tmTheme)'
     ),
+    ansi_mapping: Path | None = typer.Option(
+        None,
+        '--ansi-mapping',
+        '-a',
+        help='ANSI mapping file to apply before conversion',
+    ),
 ) -> None:
     """Convert a VSCode theme to TextMate format."""
+    # Load theme
     theme = VSCodeTheme.from_json(input_file)
+
+    # Apply ANSI mapping if provided
+    if ansi_mapping:
+        mapping = AnsiMapping.load_json(ansi_mapping)
+        theme = theme.apply_ansi_mapping(mapping)
+        typer.echo('Applied ANSI color mapping')
+
+    # Convert and save
     tm_theme = theme.to_tm_theme()
     tm_theme.to_tm_theme(output_file)
     typer.echo(f'Successfully converted {input_file} to {output_file}')

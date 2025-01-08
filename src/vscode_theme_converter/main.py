@@ -4,10 +4,9 @@ import typer
 from rich import print as rprint
 from rich.style import Style
 
-from .ansi_mapping import AnsiMapping, ColorMapping
+from .ansi_mapping import AnsiColor, AnsiMapping, ColorMapping
 from .contrast import get_contrast_ratio, get_contrast_ratio_rating
 from .terminal import (
-    AnsiColor,
     get_terminal_background_color,
     get_terminal_foreground_color,
 )
@@ -110,7 +109,7 @@ def ansi_map_show(
         rprint(
             f'[{idx:2d}] ',
             f'[{hex_style}]■■■■ Abcd {color_code:<8}[/]',
-            f' → {ansi_text:<15} (Used in {color_map.usage_count} places)',
+            f' → {ansi_text:<15} (Used in {color_map.usage_count} scopes)',
         )
 
         if not quiet:

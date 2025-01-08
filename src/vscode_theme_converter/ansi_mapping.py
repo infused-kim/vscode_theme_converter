@@ -1,10 +1,175 @@
 import json
+from enum import Enum
 from pathlib import Path
-from typing import Self, cast
+from typing import ClassVar, Iterator, Literal, Self, cast
 
 from pydantic import BaseModel, Field, field_serializer, field_validator
+from rich.style import Style
 
-from .terminal import AnsiColor, AnsiColorName
+from .terminal import get_terminal_ansi_color
+
+#
+# ANSI color definitions
+#
+
+
+class AnsiColorName(Enum):
+    """Names of standard ANSI colors."""
+
+    # Normal colors (0-7)
+    BLACK = 0
+    RED = 1
+    GREEN = 2
+    YELLOW = 3
+    BLUE = 4
+    MAGENTA = 5
+    CYAN = 6
+    WHITE = 7
+
+    # Bright colors (8-15)
+    BLACK_BRIGHT = 8
+    RED_BRIGHT = 9
+    GREEN_BRIGHT = 10
+    YELLOW_BRIGHT = 11
+    BLUE_BRIGHT = 12
+    MAGENTA_BRIGHT = 13
+    CYAN_BRIGHT = 14
+    WHITE_BRIGHT = 15
+
+
+# Define a new type for ANSI color numbers
+AnsiColorNum = Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+
+class AnsiColor:
+    """
+    Represents an ANSI terminal color.
+
+    This class manages all 16 standard ANSI colors (8 normal + 8 bright).
+
+    Colors are cached at class level to ensure single instance per color.
+    """
+
+    # Class-level storage
+    _by_name: ClassVar[dict[AnsiColorName, 'AnsiColor']] = {}
+    _by_num: ClassVar[dict[AnsiColorNum, 'AnsiColor']] = {}
+    _initialized: ClassVar[bool] = False
+
+    def __init__(self, name: AnsiColorName) -> None:
+        """Initialize color (should only be called by create())."""
+        self.name: str = name.name
+        self.title: str = name.name.replace('_', ' ').title()
+        self.num: AnsiColorNum = name.value
+        self.color_code: str | None = get_terminal_ansi_color(self.num)
+        self.color_code_title = (
+            self.color_code if self.color_code is not None else '' * 7
+        )
+
+    def __str__(self) -> str:
+        """Return the color name."""
+        return f'ANSI {self.num:02d}: {self.name}'
+
+    def get_color_code(self, if_none: str = '' * 7) -> str:
+        """Get the color code, or a default if none."""
+        return self.color_code or if_none
+
+    def get_rich_style(self, bgcolor: str | None = None) -> Style:
+        """Return a rich style for this color and set background color."""
+        return Style(color=f'color({self.num})', bgcolor=bgcolor)
+
+    @property
+    def rich_style(self) -> Style:
+        """Return a rich style for this color."""
+        return self.get_rich_style()
+
+    @property
+    def is_bright(self) -> bool:
+        """Whether this is a bright variant."""
+        return self.num >= 8
+
+    @property
+    def base_color(self) -> 'AnsiColor':
+        """Get the non-bright version of this color."""
+        if self.is_bright:
+            return self.from_num(cast(AnsiColorNum, self.num - 8))
+        return self
+
+    #
+    # Class methods
+    #
+
+    @classmethod
+    def create(cls) -> None:
+        """Create all standard ANSI colors."""
+        if cls._initialized:
+            return
+
+        for color_name in AnsiColorName:
+            color = cls(color_name)
+            cls._by_name[color_name] = color
+            cls._by_num[color_name.value] = color
+
+        cls._initialized = True
+
+    @classmethod
+    def from_name(cls, name: AnsiColorName) -> 'AnsiColor':
+        """Get a color by its name."""
+
+        if name not in AnsiColorName:
+            raise ValueError(f'Invalid color name: {name}')
+
+        return cls._by_name[name]
+
+    @classmethod
+    def from_num(cls, num: AnsiColorNum) -> 'AnsiColor':
+        """Get a color by its number."""
+        if num < 0 or num > 15:
+            raise ValueError(
+                f'ANSI color number must be between 0 and 15, got: {num}'
+            )
+
+        return cls._by_num[num]
+
+    @classmethod
+    def iter_by_number(cls) -> Iterator['AnsiColor']:
+        """Iterate through all colors in numerical order (0-15)."""
+        return (
+            cls._by_num[color.value]
+            for color in sorted(AnsiColorName, key=lambda color: color.value)
+        )
+
+    @classmethod
+    def iter_by_name(cls) -> Iterator['AnsiColor']:
+        """Iterate through all colors in alphabetical order."""
+        return (
+            cls._by_name[color]
+            for color in sorted(AnsiColorName, key=lambda color: color.name)
+        )
+
+    @classmethod
+    def iter_by_family(cls) -> Iterator['AnsiColor']:
+        """
+        Iterate through colors grouped by family.
+
+        Returns colors in order: BLACK, BLACK_BRIGHT, RED, RED_BRIGHT, etc.
+        """
+        base_colors = (color for color in AnsiColorName if color.value < 8)
+
+        for color in base_colors:
+            # Normal color
+            yield cls._by_num[color.value]
+
+            # Bright variant
+            yield cls._by_num[cast(AnsiColorNum, color.value + 8)]
+
+
+# Create all standard colors
+AnsiColor.create()
+
+
+#
+# Color mapping Models
+#
 
 
 class ColorMapping(BaseModel):

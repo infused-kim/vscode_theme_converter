@@ -6,7 +6,11 @@ from rich.style import Style
 
 from .ansi_mapping import AnsiMapping, ColorMapping
 from .contrast import get_contrast_ratio, get_contrast_ratio_rating
-from .terminal import AnsiColor
+from .terminal import (
+    AnsiColor,
+    get_terminal_background_color,
+    get_terminal_foreground_color,
+)
 from .vscode_theme import VSCodeTheme
 
 app = typer.Typer(
@@ -123,16 +127,55 @@ def ansi_map_show(
 @app.command()
 def print_terminal_colors() -> None:
     """Show how the current terminal colors look."""
+
+    def print_color(
+        color_code: str,
+        bg_color_code: str | None,
+        style: Style,
+        title: str,
+    ) -> None:
+        contrast_info = ''
+        if bg_color_code is not None and color_code is not None:
+            contrast_ratio = get_contrast_ratio(color_code, bg_color_code)
+            contrast_rating = get_contrast_ratio_rating(contrast_ratio)
+            contrast_info = f'\t→ {contrast_ratio:4.1f} ({contrast_rating})'
+
+        # Print the color info
+        rprint(
+            f'    [on {style}]    [/]  ',
+            f'[{style}]{color_code}[/]',
+            f'  {title:<12}{contrast_info}',
+        )
+
     # Print header
     typer.echo('\nCurrent Terminal Colors:\n')
 
+    # Get terminal colors
+    bg_color_code = get_terminal_background_color()
+    fg_color_code = get_terminal_foreground_color()
+
+    # Print terminal default colors
+    if bg_color_code is not None:
+        print_color(bg_color_code, None, Style(), 'Background')
+
+    if fg_color_code is not None:
+        print_color(
+            fg_color_code,
+            bg_color_code,
+            Style(color=fg_color_code),
+            'Foreground',
+        )
+
+    if bg_color_code is not None or fg_color_code is not None:
+        typer.echo('')
+
     # Print each color family
     for color in AnsiColor.iter_by_family():
-        # Print the color info
-        rprint(
-            f'    [on {color.color_code}]    [/]  ',
-            f'[{color.rich_style}]{color.color_code_title}[/]',
-            f'  {color.title}',
+        print_color(
+            color.color_code_title,
+            bg_color_code,
+            color.rich_style,
+            color.title,
         )
 
         # Add space between families if this was a bright variant
@@ -175,7 +218,7 @@ def check_contrast(
 
         rprint(
             f'\t[{fg_style}]{color:<8} ■■■■[/]',
-            f' → {ratio:4.1f} {rating}',
+            f' → {ratio:4.1f} ({rating})',
         )
 
 

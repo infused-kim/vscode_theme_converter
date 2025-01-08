@@ -11,6 +11,10 @@ from typing import ClassVar, Iterator, Literal, cast
 
 from rich.style import Style
 
+#
+# ANSI color definitions
+#
+
 
 class AnsiColorName(Enum):
     """Names of standard ANSI colors."""
@@ -59,9 +63,9 @@ class AnsiColor:
         self.name = name.name
         self.title = name.name.replace('_', ' ').title()
         self.num: AnsiColorNum = name.value
-        self.color_code: str | None = get_terminal_ansi_color_hex(self.num)
+        self.color_code: str | None = get_terminal_ansi_color(self.num)
         self.color_code_title = (
-            self.color_code if self.color_code is not None else 'Unknown'
+            self.color_code if self.color_code is not None else '' * 7
         )
 
     def __str__(self) -> str:
@@ -70,11 +74,7 @@ class AnsiColor:
 
     def get_rich_style(self, bgcolor: str | None = None) -> Style:
         """Return a rich style for this color and set background color."""
-
-        if self.color_code is None and bgcolor is None:
-            return Style(dim=True)
-
-        return Style(color=self.color_code, bgcolor=bgcolor)
+        return Style(color=f'color({self.num})', bgcolor=bgcolor)
 
     @property
     def rich_style(self) -> Style:
@@ -157,17 +157,38 @@ class AnsiColor:
             yield cls._by_num[cast(AnsiColorNum, color.value + 8)]
 
 
-def get_terminal_ansi_color_hex(ansi_color_num: int) -> str | None:
+#
+# Terminal color queries
+#
+
+
+def get_terminal_ansi_color(ansi_color_num: int) -> str | None:
+    """Query terminal for ANSI color using OSC 4."""
+    return _query_osc_color(4, ansi_color_num)
+
+
+def get_terminal_foreground_color() -> str | None:
+    """Query terminal for foreground color using OSC 10."""
+    return _query_osc_color(10)
+
+
+def get_terminal_background_color() -> str | None:
+    """Query terminal for background color using OSC 11."""
+    return _query_osc_color(11)
+
+
+def _query_osc_color(osc_code: int, param: int | None = None) -> str | None:
     """
-    Query terminal for color using OSC 4 escape sequence.
+    Query terminal for color using OSC escape sequence.
 
     Args:
-        ansi_color_num: Color index (0-15 for ANSI colors)
+        osc_code: OSC code to query (4 for ANSI colors, 11 for background)
+        param: Optional parameter (e.g., color number for OSC 4)
 
     Returns:
         Hex color code or None if no response
     """
-    # Save terminal settings
+
     try:
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
@@ -178,14 +199,17 @@ def get_terminal_ansi_color_hex(ansi_color_num: int) -> str | None:
         # Set terminal to raw mode
         tty.setraw(fd)
 
-        # Send OSC 4 query: ^[]4;{idx};?^G
-        sys.stdout.write(f'\033]4;{ansi_color_num};?\007')
+        # Send OSC query (with optional parameter)
+        query = f'\033]{osc_code}'
+        if param is not None:
+            query += f';{param}'
+        query += ';?\007'
+
+        sys.stdout.write(query)
         sys.stdout.flush()
 
-        # Read response (format: ^[]4;{idx};rgb:RRRR/GGGG/BBBB^G)
+        # Read response
         response = ''
-
-        # Read until we get the bell character or timeout
         while len(response) < 100:  # Safeguard against infinite loop
             if sys.stdin.readable():
                 char = sys.stdin.read(1)
@@ -195,10 +219,9 @@ def get_terminal_ansi_color_hex(ansi_color_num: int) -> str | None:
 
         # Parse the response
         if 'rgb:' in response:
-            # Extract RGB values (using first 2 digits of each component)
             rgb = response.split('rgb:')[1].strip('\007')
             r, g, b = [int(c[:2], 16) for c in rgb.split('/')]
-            return f'#{r:02x}{g:02x}{b:02x}'
+            return f'#{r:02x}{g:02x}{b:02x}'.upper()
 
     finally:
         # Restore terminal settings

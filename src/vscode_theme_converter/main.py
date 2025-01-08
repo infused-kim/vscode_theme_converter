@@ -4,8 +4,9 @@ import typer
 from rich import print as rprint
 from rich.style import Style
 
-from .ansi_mapping import AnsiColor, AnsiMapping, ColorMapping
+from .ansi_mapping import AnsiMapping, ColorMapping
 from .contrast import get_contrast_ratio, get_contrast_ratio_rating
+from .terminal import AnsiColor
 from .vscode_theme import VSCodeTheme
 
 app = typer.Typer(
@@ -125,33 +126,18 @@ def print_terminal_colors() -> None:
     # Print header
     typer.echo('\nCurrent Terminal Colors:\n')
 
-    # Print each color
-    for base_color in [
-        'BLACK',
-        'RED',
-        'GREEN',
-        'YELLOW',
-        'BLUE',
-        'MAGENTA',
-        'CYAN',
-        'WHITE',
-    ]:
-        # Normal variant
-        color_num = getattr(AnsiColor, base_color)
+    # Print each color family
+    for color in AnsiColor.iter_by_family():
+        # Print the color info
         rprint(
-            f'    [on color({color_num})]    [/]  ',
-            f'[color({color_num})]{base_color.lower()}[/]',
+            f'    [on {color.color_code}]    [/]  ',
+            f'[{color.rich_style}]{color.color_code_title}[/]',
+            f'  {color.title}',
         )
 
-        # Bright variant
-        bright_num = getattr(AnsiColor, f'{base_color}_BRIGHT')
-        rprint(
-            f'    [on color({bright_num})]    [/]  ',
-            f'[color({bright_num})]{base_color.lower()} bright[/]',
-        )
-
-        # Empty line between color pairs
-        typer.echo('')
+        # Add space between families if this was a bright variant
+        if color.is_bright:
+            typer.echo('')
 
 
 @app.command()

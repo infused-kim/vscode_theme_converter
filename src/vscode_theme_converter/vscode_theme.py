@@ -6,12 +6,6 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
 from .ansi_mapping import AnsiMapping, ColorMapping
-from .tm_theme import (
-    TMTheme,
-    TMThemeGlobalSettings,
-    TMThemeRule,
-    TMThemeSettings,
-)
 
 
 class TokenColorSettings(BaseModel):
@@ -116,43 +110,6 @@ class VSCodeTheme(BaseModel):
             theme.name = json_path.stem
 
         return theme
-
-    def to_tm_theme(self) -> TMTheme:
-        """Convert VSCode theme to TextMate theme format."""
-        # Create global settings from our colors
-        global_settings = TMThemeGlobalSettings(
-            background=self.colors.editor_background,
-            foreground=self.colors.editor_foreground,
-            caret=self.colors.editor_cursor_foreground,
-            selection=self.colors.editor_selection_background,
-            lineHighlight=self.colors.editor_line_highlight_background,
-            invisibles=self.colors.editor_whitespace_foreground,
-            selectionForeground=None,
-            gutterForeground=None,
-            activeGuide=None,
-            stackGuide=None,
-        )
-
-        # Convert token colors to rules
-        rules = [
-            TMThemeRule(
-                name=token.name,
-                scope=', '.join(token.scope)
-                if isinstance(token.scope, list)
-                else token.scope,
-                settings=TMThemeSettings(
-                    foreground=token.settings.foreground,
-                    fontStyle=token.settings.font_style,
-                ),
-            )
-            for token in self.token_colors
-        ]
-
-        # Create theme with global settings first, then rules
-        return TMTheme(
-            name=self.name or 'Converted Theme',
-            settings=[{'settings': global_settings}, *rules],
-        )
 
     def generate_ansi_mapping(self) -> AnsiMapping:
         """Generate initial ANSI color mappings from theme colors."""

@@ -10,6 +10,7 @@ from .terminal import (
     get_terminal_background_color,
     get_terminal_foreground_color,
 )
+from .tm_theme_converter import convert_vscode_theme_to_tm_theme
 from .vscode_theme import VSCodeTheme
 
 app = typer.Typer(
@@ -51,7 +52,7 @@ def convert(
         typer.echo('Applied ANSI color mapping')
 
     # Convert and save
-    tm_theme = theme.to_tm_theme()
+    tm_theme = convert_vscode_theme_to_tm_theme(theme)
     tm_theme.to_tm_theme(output_file)
     typer.echo(f'Successfully converted {input_file} to {output_file}')
 

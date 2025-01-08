@@ -67,16 +67,30 @@ def ansi_map_gen(
     ),
 ) -> None:
     """Generate initial ANSI color mappings from a VSCode theme."""
-    # Load theme
+    # Generate new mapping
     theme = VSCodeTheme.from_json(input_file)
+    new_mapping = theme.generate_ansi_mapping()
 
-    # Generate color mapping
-    mapping = theme.generate_ansi_mapping()
+    # Update with existing mapping if it exists
+    if output_file.exists():
+        should_update = typer.confirm(
+            f'\nFile {output_file} already exists. '
+            f'Update with existing mappings?',
+            default=False,
+        )
+        if not should_update:
+            typer.echo('Aborted.')
+            return
 
-    # Save to JSON
-    mapping.save_json(output_file)
+        # Load existing mapping and update new mapping with its ANSI colors
+        existing_mapping = AnsiMapping.load_json(output_file)
+        new_mapping.update_from_mapping(existing_mapping)
+
+    # Save the mapping
+    new_mapping.save_json(output_file)
     typer.echo(
-        f'Generated ANSI color mapping in {output_file}\n'
+        f'{"Updated" if output_file.exists() else "Generated"} '
+        f'ANSI color mapping in {output_file}\n'
         'Edit this file to customize the color assignments.'
     )
 

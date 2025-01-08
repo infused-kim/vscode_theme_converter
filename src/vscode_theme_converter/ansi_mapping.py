@@ -358,3 +358,43 @@ class AnsiMapping(BaseModel):
     def token_color_mappings(self) -> dict[str, ColorMapping]:
         """Get mappings as a dict for backward compatibility."""
         return {mapping.color_code: mapping for mapping in self.color_mappings}
+
+    def update_from_mapping(self, update_mapping: 'AnsiMapping') -> None:
+        """
+        Update color mappings with ANSI colors from another mapping.
+
+        Args:
+            update_mapping: Mapping to get ANSI colors from
+
+        If a color exists in both mappings:
+            - Keep our scopes and settings
+            - Update the ANSI color from update_mapping
+
+        If a color only exists in update_mapping:
+            - Add it with the ANSI color but no scopes
+        """
+        # Get quick lookup of our colors
+        our_colors = {
+            mapping.color_code: mapping for mapping in self.color_mappings
+        }
+
+        # Update existing colors
+        for update_color in update_mapping.color_mappings:
+            if update_color.ansi_color is None:
+                continue
+
+            if update_color.color_code in our_colors:
+                our_color = our_colors[update_color.color_code]
+
+                # Update ANSI color for existing color
+                our_color.ansi_color = update_color.ansi_color
+            else:
+                # Add new color with just the ANSI mapping
+                self.color_mappings.append(
+                    ColorMapping(
+                        color_code=update_color.color_code,
+                        ansi_color=update_color.ansi_color,
+                        ui_settings=set(),
+                        scopes=set(),
+                    )
+                )

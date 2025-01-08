@@ -24,9 +24,9 @@ def get_contrast_ratio(fg: str, bg: str) -> float:
 def get_contrast_ratio_rating(ratio: float) -> str:
     """Get the WCAG rating for a contrast ratio."""
 
-    if ratio >= 7.0:
+    if round(ratio, 1) >= 7.0:
         return 'AAA'
-    elif ratio >= 4.5:
+    elif round(ratio, 1) >= 4.5:
         return 'AA'
     else:
         return '✗'

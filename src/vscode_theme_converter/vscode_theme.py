@@ -5,6 +5,10 @@ import json5
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
+from vscode_theme_converter.conversion_mappings import (
+    VSCODE_TO_TM_SETTINGS_MAP,
+)
+
 from .ansi_mapping import AnsiMapping, ColorMapping
 
 
@@ -78,7 +82,7 @@ class VSCodeTheme(BaseModel):
     semantic_token_colors: dict[str, str] | None = Field(
         None, alias='semanticTokenColors'
     )
-    colors: Colors
+    colors: dict[str, str]
     token_colors: list[TokenColor] = Field(alias='tokenColors')
 
     @model_validator(mode='after')
@@ -113,27 +117,43 @@ class VSCodeTheme(BaseModel):
 
     def generate_ansi_mapping(self) -> AnsiMapping:
         """Generate initial ANSI color mappings from theme colors."""
-        # Track all unique colors and their usage
+
         color_mapping_dict: dict[str, ColorMapping] = {}
+
+        def add_color_mapping(
+            color: str, scopes: str | list[str] | None
+        ) -> None:
+            if isinstance(scopes, str):
+                scopes = [scopes]
+            elif scopes is None:
+                scopes = []
+
+            # Create or update mapping
+            if color not in color_mapping_dict:
+                mapping = ColorMapping(color_code=color, scopes=set(scopes))
+                color_mapping_dict[color] = mapping
+            else:
+                mapping = color_mapping_dict[color]
+                mapping.scopes.update(scopes)
+
+        # Process colors (settings)
+        vsc_to_tm_settings_list = list(VSCODE_TO_TM_SETTINGS_MAP.keys())
+        for setting, color_value in self.colors.items():
+            if setting in vsc_to_tm_settings_list:
+                add_color_mapping(
+                    color=color_value,
+                    scopes=setting,
+                )
 
         # Process token colors
         for token in self.token_colors:
             if not token.settings.foreground:
                 continue
 
-            color = token.settings.foreground
-
-            # Create or update mapping
-            if color not in color_mapping_dict:
-                mapping = ColorMapping(color_code=color)
-                color_mapping_dict[color] = mapping
-
-            # Update scopes
-            if token.scope:
-                if isinstance(token.scope, list):
-                    color_mapping_dict[color].scopes.update(token.scope)
-                else:
-                    color_mapping_dict[color].scopes.add(token.scope)
+            add_color_mapping(
+                color=token.settings.foreground,
+                scopes=token.scope,
+            )
 
         return AnsiMapping(
             theme_name=self.name or 'Unnamed Theme',
@@ -157,15 +177,11 @@ class VSCodeTheme(BaseModel):
         color_map = mapping.token_color_mappings
 
         # Replace colors in UI settings
-        for field_name, field in self.colors.model_fields.items():
-            color = getattr(self.colors, field_name)
-            if not color:
-                continue
-
-            if color in color_map:
-                ansi_color = color_map[color].ansi_color
+        for setting, color_value in self.colors.items():
+            if color_value in color_map:
+                ansi_color = color_map[color_value].ansi_color
                 if ansi_color is not None:
-                    setattr(ansi_theme.colors, field_name, ansi_color.ansi_hex)
+                    ansi_theme.colors[setting] = ansi_color.ansi_hex
 
         # Replace colors in token colors
         for token in ansi_theme.token_colors:

@@ -6,11 +6,11 @@ from rich.style import Style
 
 from .ansi_mapping import AnsiColor, AnsiMapping, ColorMapping
 from .contrast import get_contrast_ratio, get_contrast_ratio_rating
+from .converter_vsc_tm import convert_vscode_theme_to_tm_theme
 from .terminal import (
     get_terminal_background_color,
     get_terminal_foreground_color,
 )
-from .tm_theme_converter import convert_vscode_theme_to_tm_theme
 from .vscode_theme import VSCodeTheme
 
 app = typer.Typer(

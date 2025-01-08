@@ -92,21 +92,24 @@ def ansi_map_show(
 
     # Print each color's info
     for idx, (color_code, color_map) in enumerate(
-        sorted(mapping.token_color_mappings.items(), key=sort_key), 1
+        sorted(mapping.token_color_mappings.items(), key=sort_key), start=1
     ):
         # Create styles
         hex_style = Style(color=color_code)
 
         if color_map.ansi_color is not None:
-            # Use ANSI color for the mapping text
-            ansi_text = f'[color({color_map.ansi_color})]ANSI-{color_map.ansi_color.name}[/]'
+            ansi_color = color_map.ansi_color
+            ansi_text = (
+                f'[{ansi_color.rich_style}]'
+                f'{ansi_color.get_color_code("")} {ansi_color.title}[/]'
+            )
         else:
             ansi_text = 'Unmapped'
 
         # Print with color and index
         rprint(
             f'[{idx:2d}] ',
-            f'[{hex_style}]{color_code:<8} ■■■■[/]',
+            f'[{hex_style}]■■■■ Abcd {color_code:<8}[/]',
             f' → {ansi_text:<15} (Used in {color_map.usage_count} places)',
         )
 

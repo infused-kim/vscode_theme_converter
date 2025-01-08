@@ -60,8 +60,8 @@ class AnsiColor:
 
     def __init__(self, name: AnsiColorName) -> None:
         """Initialize color (should only be called by create())."""
-        self.name = name.name
-        self.title = name.name.replace('_', ' ').title()
+        self.name: str = name.name
+        self.title: str = name.name.replace('_', ' ').title()
         self.num: AnsiColorNum = name.value
         self.color_code: str | None = get_terminal_ansi_color(self.num)
         self.color_code_title = (
@@ -71,6 +71,10 @@ class AnsiColor:
     def __str__(self) -> str:
         """Return the color name."""
         return f'ANSI {self.num:02d}: {self.name}'
+
+    def get_color_code(self, if_none: str = '' * 7) -> str:
+        """Get the color code, or a default if none."""
+        return self.color_code or if_none
 
     def get_rich_style(self, bgcolor: str | None = None) -> Style:
         """Return a rich style for this color and set background color."""
@@ -122,6 +126,11 @@ class AnsiColor:
     @classmethod
     def from_num(cls, num: AnsiColorNum) -> 'AnsiColor':
         """Get a color by its number."""
+        if num < 0 or num > 15:
+            raise ValueError(
+                f'ANSI color number must be between 0 and 15, got: {num}'
+            )
+
         return cls._by_num[num]
 
     @classmethod

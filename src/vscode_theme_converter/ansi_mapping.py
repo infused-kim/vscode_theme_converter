@@ -1,69 +1,69 @@
 import json
-from enum import IntEnum
 from pathlib import Path
-from typing import Self
+from typing import Self, cast
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_serializer, field_validator
 
-
-class AnsiColor(IntEnum):
-    """Standard ANSI colors."""
-
-    BLACK = 0
-    RED = 1
-    GREEN = 2
-    YELLOW = 3
-    BLUE = 4
-    MAGENTA = 5
-    CYAN = 6
-    WHITE = 7
-
-    # Bright variants
-    BLACK_BRIGHT = 8
-    RED_BRIGHT = 9
-    GREEN_BRIGHT = 10
-    YELLOW_BRIGHT = 11
-    BLUE_BRIGHT = 12
-    MAGENTA_BRIGHT = 13
-    CYAN_BRIGHT = 14
-    WHITE_BRIGHT = 15
-
-    @classmethod
-    def from_string(cls, value: str) -> 'AnsiColor':
-        """Convert string to AnsiColor enum."""
-        try:
-            return cls[value.upper()]
-        except KeyError as e:
-            raise ValueError(
-                f'Invalid ANSI color name: {value}. '
-                f'Valid values are: {", ".join(cls.__members__)}'
-            ) from e
+from .terminal import AnsiColor, AnsiColorName
 
 
 class ColorMapping(BaseModel):
     """Maps a color to ANSI and tracks its usage."""
 
-    color_code: str  # Hex color code like '#FFFFFF'
+    class Config:
+        arbitrary_types_allowed = True
+
+    color_code: str
     ansi_color: AnsiColor | None = None
     ui_settings: list[str] = Field(default_factory=list)
     scopes: list[str] = Field(default_factory=list)
 
     @field_validator('ansi_color', mode='before')
     @classmethod
-    def validate_ansi_color(cls, value: str | int | None) -> AnsiColor | None:
-        """Convert string to AnsiColor enum."""
+    def validate_ansi_color(
+        cls, value: AnsiColor | str | int | None
+    ) -> AnsiColor | None:
+        """Convert string or int to AnsiColor object."""
         if value is None:
             return None
-        if isinstance(value, (AnsiColor, int)):
-            return AnsiColor(value)
+
+        # Handle AnsiColor object
+        if isinstance(value, AnsiColor):
+            return value
+
+        # Handle string input (color name)
         if isinstance(value, str):
-            return AnsiColor.from_string(value)
+            try:
+                # Try to get enum by name
+                color_name = AnsiColorName[value.upper()]
+                return AnsiColor.from_name(color_name)
+            except KeyError as e:
+                # If not a name, try converting to int
+                try:
+                    num = int(value)
+                    return AnsiColor.from_num(num)  # type: ignore
+                except ValueError:
+                    raise ValueError(
+                        f'Invalid ANSI color name or number: {value}'
+                    ) from e
+
+        # Handle integer input
+        if isinstance(value, int):
+            return AnsiColor.from_num(value)  # type: ignore
+
         raise ValueError(f'Invalid ANSI color value: {value}')
 
     @property
     def usage_count(self) -> int:
         """Total number of places this color is used."""
         return len(self.ui_settings) + len(self.scopes)
+
+    @field_serializer('ansi_color')
+    def serialize_ansi_color(self, ansi_color: AnsiColor | None) -> str | None:
+        """Serialize AnsiColor to string."""
+        if ansi_color is None:
+            return None
+        return cast(str, ansi_color.name)
 
 
 class AnsiMapping(BaseModel):

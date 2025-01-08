@@ -180,8 +180,21 @@ class ColorMapping(BaseModel):
 
     color_code: str
     ansi_color: AnsiColor | None = None
-    ui_settings: list[str] = Field(default_factory=list)
-    scopes: list[str] = Field(default_factory=list)
+    ui_settings: set[str] = Field(default_factory=set)
+    scopes: set[str] = Field(default_factory=set)
+
+    @field_serializer('ui_settings', 'scopes')
+    def serialize_sets(self, value: set[str]) -> list[str]:
+        """Convert sets to sorted lists for JSON serialization."""
+        return sorted(value)
+
+    @field_validator('ui_settings', 'scopes', mode='before')
+    @classmethod
+    def validate_sets(cls, value: list[str] | set[str]) -> set[str]:
+        """Convert lists to sets when loading from JSON."""
+        if isinstance(value, list):
+            return set(value)
+        return value
 
     @field_validator('ansi_color', mode='before')
     @classmethod
@@ -235,7 +248,7 @@ class AnsiMapping(BaseModel):
     """Collection of color mappings for a theme."""
 
     theme_name: str
-    token_color_mappings: dict[str, ColorMapping]
+    color_mappings: list[ColorMapping]
 
     def save_json(self, file_path: Path | str) -> None:
         """Save the color mappings to a JSON file."""
@@ -259,3 +272,8 @@ class AnsiMapping(BaseModel):
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             return cls.model_validate(data)
+
+    @property
+    def token_color_mappings(self) -> dict[str, ColorMapping]:
+        """Get mappings as a dict for backward compatibility."""
+        return {mapping.color_code: mapping for mapping in self.color_mappings}

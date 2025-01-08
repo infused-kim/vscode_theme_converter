@@ -154,24 +154,29 @@ class VSCodeTheme(BaseModel):
 
     def generate_ansi_mapping(self) -> AnsiMapping:
         """Generate initial ANSI color mappings from theme colors."""
-        token_color_mappings: dict[str, ColorMapping] = {}
+        # Track all unique colors and their usage
+        color_mapping_dict: dict[str, ColorMapping] = {}
 
-        # Collect colors from token colors
+        # Process token colors
         for token in self.token_colors:
-            if token.settings.foreground:
-                color = token.settings.foreground
-                if color not in token_color_mappings:
-                    token_color_mappings[color] = ColorMapping(
-                        color_code=color
-                    )
-                if token.scope:
-                    token_color_mappings[color].scopes.append(
-                        token.scope
-                        if isinstance(token.scope, str)
-                        else ', '.join(token.scope)
-                    )
+            if not token.settings.foreground:
+                continue
+
+            color = token.settings.foreground
+
+            # Create or update mapping
+            if color not in color_mapping_dict:
+                mapping = ColorMapping(color_code=color)
+                color_mapping_dict[color] = mapping
+
+            # Update scopes
+            if token.scope:
+                if isinstance(token.scope, list):
+                    color_mapping_dict[color].scopes.update(token.scope)
+                else:
+                    color_mapping_dict[color].scopes.add(token.scope)
 
         return AnsiMapping(
             theme_name=self.name or 'Unnamed Theme',
-            token_color_mappings=token_color_mappings,
+            color_mappings=list(color_mapping_dict.values()),
         )

@@ -160,42 +160,6 @@ class VSCodeTheme(BaseModel):
             color_mappings=list(color_mapping_dict.values()),
         )
 
-    def apply_ansi_mapping(self, mapping: AnsiMapping) -> 'VSCodeTheme':
-        """
-        Create a new theme with colors replaced by their ANSI mappings.
-
-        Args:
-            mapping: ANSI color mapping to apply
-
-        Returns:
-            New theme with ANSI colors
-        """
-        # Create new theme
-        ansi_theme = self.model_copy()
-
-        # Get color mappings
-        color_map = mapping.token_color_mappings
-
-        # Replace colors in UI settings
-        for setting, color_value in self.colors.items():
-            if color_value in color_map:
-                ansi_color = color_map[color_value].ansi_color
-                if ansi_color is not None:
-                    ansi_theme.colors[setting] = ansi_color.ansi_hex
-
-        # Replace colors in token colors
-        for token in ansi_theme.token_colors:
-            if not token.settings.foreground:
-                continue
-
-            color = token.settings.foreground
-            if color in color_map:
-                ansi_color = color_map[color].ansi_color
-                if ansi_color is not None:
-                    token.settings.foreground = ansi_color.ansi_hex
-
-        return ansi_theme
-
     @field_validator('token_colors', mode='before')
     @classmethod
     def normalize_token_colors(

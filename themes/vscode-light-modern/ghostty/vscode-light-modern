@@ -1,0 +1,54 @@
+# Generated from the VSCode Light Modern theme using the colors displayed
+# after running the `Developer: Generate Color Theme From Current Settings`
+# command.
+#
+# But modified it a little to match the vscode editor theme better.
+
+# Background and UI colors
+background = #F7F7F7
+foreground = #3B3B3B
+cursor-color = #015FB8
+selection-background = #ADD6FF
+selection-foreground = #000000
+
+# Black
+palette = 0=#000000
+palette = 8=#666666
+
+# Red
+# Changed normal to a shade of red to match vscode editor theme
+# Bright was the same as normal, but I made it a bit brighter.
+palette = 1=#A31515
+palette = 9=#E50000
+
+# Green
+# Changed normal to darker green
+palette = 2=#008000
+palette = 10=#14CE14
+
+# Yellow
+# Changed yellow and bright to match vscode editor theme
+palette = 3=#795E26
+palette = 11=#CD9731
+
+# Blue
+# Previously bright was the same as normal. Now brigther.
+palette = 4=#0451a5
+palette = 12=#0000FF
+
+# Magenta
+# Previously normal was the same as bright. Now it matches vscode editor theme
+# better.
+palette = 5=#800080
+palette = 13=#BC05BC
+
+# Cyan
+# Previously normal was the same as bright. Now slightly darker
+palette = 6=#267F99
+palette = 14=#0598BC
+
+# White
+# Made normal closer to white
+# Set bright to a barely visible gray
+palette = 7=#e3e3e3
+palette = 15=#d5d2d2

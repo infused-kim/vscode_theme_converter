@@ -1,0 +1,41 @@
+# A dark theme that tries to mimick the colors of the actual vscode
+# dark-modern theme, but changes some of the originally intended colors of the # code syntax theme.
+
+# Background and UI colors
+background = #181818
+foreground = #CCCCCC
+cursor-color = #CCCCCC
+selection-background = #264f78
+selection-foreground = #CCCCCC
+
+# Black
+palette = 0=#000000
+palette = 8=#666666
+
+# Red
+palette = 1=#CE9178
+palette = 9=#F14C4C
+
+# Green
+palette = 2=#CE9178
+palette = 10=#4EC9B0
+
+# Yellow
+palette = 3=#DCDCAA
+palette = 11=#F5F543
+
+# Blue
+palette = 4=#9CDCFE
+palette = 12=#569CD6
+
+# Magenta
+palette = 5=#BC3FBC
+palette = 13=#C586C0
+
+# Cyan
+palette = 6=#4EC9B0
+palette = 14=#29B8DB
+
+# White
+palette = 7=#E5E5E5
+palette = 15=#E5E5E5

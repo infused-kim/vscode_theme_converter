@@ -1,0 +1,42 @@
+# Generated from the VSCode Light Modern theme using the colors displayed
+# after running the `Developer: Generate Color Theme From Current Settings`
+# command.
+
+# Background and UI colors
+background = #F7F7F7
+foreground = #3B3B3B
+cursor-color = #015FB8
+selection-background = #ADD6FF
+selection-foreground = #000000
+
+# Black
+palette = 0=#000000
+palette = 8=#666666
+
+# Red
+palette = 1=#CD3131
+palette = 9=#CD3131
+
+# Green
+palette = 2=#107C10
+palette = 10=#14CE14
+
+# Yellow
+palette = 3=#949800
+palette = 11=#B5BA00
+
+# Blue
+palette = 4=#0451a5
+palette = 12=#0451a5
+
+# Magenta
+palette = 5=#BC05BC
+palette = 13=#BC05BC
+
+# Cyan
+palette = 6=#0598BC
+palette = 14=#0598BC
+
+# White
+palette = 7=#555555
+palette = 15=#A5A5A5

@@ -1,0 +1,43 @@
+# A dark theme that looks good with the vscode-light-modern code syntax theme.
+#
+# It preserves the intended colors (such as green comments and red strings)
+# but uses colors that are easier to see on dark backgrounds.
+
+# Background and UI colors
+background = #181818
+foreground = #CCCCCC
+cursor-color = #CCCCCC
+selection-background = #264F78
+selection-foreground = #CCCCCC
+
+# Black
+palette = 0=#000000
+palette = 8=#8f8e8e
+
+# Red
+palette = 1=#CD3131
+palette = 9=#F14C4C
+
+# Green
+palette = 2=#0DBC79
+palette = 10=#23D18B
+
+# Yellow
+palette = 3=#cd9225
+palette = 11=#f5f536
+
+# Blue
+palette = 4=#4D8ED3
+palette = 12=#82c1f6
+
+# Magenta
+palette = 5=#BC3FBC
+palette = 13=#D670D6
+
+# Cyan
+palette = 6=#11A8CD
+palette = 14=#29B8DB
+
+# White
+palette = 7=#E5E5E5
+palette = 15=#E5E5E5

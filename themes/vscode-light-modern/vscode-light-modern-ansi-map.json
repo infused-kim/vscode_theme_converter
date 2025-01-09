@@ -1,0 +1,369 @@
+{
+  "theme_name": "light_modern_compiled",
+  "color_mappings": [
+    {
+      "color_code": "#ffffff",
+      "ansi_color": "BACKGROUND",
+      "ui_settings": [],
+      "scopes": [
+        "editor.background"
+      ]
+    },
+    {
+      "color_code": "#3b3b3b",
+      "ansi_color": "FOREGROUND",
+      "ui_settings": [],
+      "scopes": [
+        "editor.foreground"
+      ]
+    },
+    {
+      "color_code": "#e5ebf1",
+      "ansi_color": null,
+      "ui_settings": [],
+      "scopes": [
+        "editor.inactiveSelectionBackground"
+      ]
+    },
+    {
+      "color_code": "#6e7681",
+      "ansi_color": "FOREGROUND",
+      "ui_settings": [],
+      "scopes": [
+        "editorLineNumber.foreground"
+      ]
+    },
+    {
+      "color_code": "#000000",
+      "ansi_color": "FOREGROUND",
+      "ui_settings": [],
+      "scopes": [
+        "entity.name.label",
+        "keyword.operator",
+        "keyword.operator.quantifier.regexp",
+        "meta.embedded",
+        "meta.template.expression",
+        "source.groovy.embedded",
+        "storage.modifier.import.java",
+        "storage.modifier.package.java",
+        "string meta.image.inline.markdown",
+        "variable.language.wildcard.java",
+        "variable.legacy.builtin.python"
+      ]
+    },
+    {
+      "color_code": "#000080",
+      "ansi_color": "FOREGROUND",
+      "ui_settings": [],
+      "scopes": [
+        "markup.bold",
+        "meta.diff.header"
+      ]
+    },
+    {
+      "color_code": "#008000",
+      "ansi_color": "GREEN",
+      "ui_settings": [],
+      "scopes": [
+        "comment"
+      ]
+    },
+    {
+      "color_code": "#0000FF",
+      "ansi_color": "BLUE_BRIGHT",
+      "ui_settings": [],
+      "scopes": [
+        "constant.character",
+        "constant.language",
+        "constant.other.option",
+        "entity.name.function.preprocessor",
+        "keyword",
+        "keyword.operator.alignas",
+        "keyword.operator.alignof",
+        "keyword.operator.cast",
+        "keyword.operator.expression",
+        "keyword.operator.instanceof",
+        "keyword.operator.logical.python",
+        "keyword.operator.new",
+        "keyword.operator.noexcept",
+        "keyword.operator.sizeof",
+        "keyword.operator.typeid",
+        "keyword.operator.wordlike",
+        "meta.preprocessor",
+        "punctuation.definition.template-expression.begin",
+        "punctuation.definition.template-expression.end",
+        "punctuation.section.embedded",
+        "storage",
+        "storage.modifier",
+        "storage.type",
+        "string.comment.buffered.block.pug",
+        "string.interpolated.pug",
+        "string.quoted.double.handlebars",
+        "string.quoted.double.html",
+        "string.quoted.double.xml",
+        "string.quoted.pug",
+        "string.quoted.single.handlebars",
+        "string.quoted.single.html",
+        "string.quoted.single.xml",
+        "string.quoted.single.yaml",
+        "string.unquoted.block.yaml",
+        "string.unquoted.cdata.xml",
+        "string.unquoted.html",
+        "string.unquoted.plain.in.yaml",
+        "string.unquoted.plain.out.yaml",
+        "variable.language"
+      ]
+    },
+    {
+      "color_code": "#098658",
+      "ansi_color": "GREEN",
+      "ui_settings": [],
+      "scopes": [
+        "constant.numeric",
+        "constant.sha.git-rebase",
+        "keyword.operator.minus.exponent",
+        "keyword.operator.plus.exponent",
+        "keyword.other.unit",
+        "markup.inserted",
+        "meta.preprocessor.numeric"
+      ]
+    },
+    {
+      "color_code": "#0070C1",
+      "ansi_color": "BLUE",
+      "ui_settings": [],
+      "scopes": [
+        "variable.other.constant",
+        "variable.other.enummember"
+      ]
+    },
+    {
+      "color_code": "#811F3F",
+      "ansi_color": "MAGENTA",
+      "ui_settings": [],
+      "scopes": [
+        "constant.character.character-class.regexp",
+        "constant.character.set.regexp",
+        "constant.other.character-class.regexp",
+        "constant.other.character-class.set.regexp",
+        "constant.regexp",
+        "string.regexp"
+      ]
+    },
+    {
+      "color_code": "#800000",
+      "ansi_color": "MAGENTA",
+      "ui_settings": [],
+      "scopes": [
+        "entity.name.selector",
+        "entity.name.tag",
+        "entity.other.attribute-name.class.css",
+        "entity.other.attribute-name.id.css",
+        "entity.other.attribute-name.parent-selector.css",
+        "entity.other.attribute-name.parent.less",
+        "entity.other.attribute-name.pseudo-element.css",
+        "entity.other.attribute-name.scss",
+        "markup.heading",
+        "markup.inline.raw",
+        "punctuation.definition.tag",
+        "punctuation.section.embedded.begin.php",
+        "punctuation.section.embedded.end.php",
+        "source.css entity.other.attribute-name.class",
+        "source.css entity.other.attribute-name.pseudo-class",
+        "source.css.less entity.other.attribute-name.id"
+      ]
+    },
+    {
+      "color_code": "#E50000",
+      "ansi_color": "RED_BRIGHT",
+      "ui_settings": [],
+      "scopes": [
+        "entity.other.attribute-name",
+        "source.coffee.embedded",
+        "source.css variable",
+        "support.type.property-name",
+        "support.type.vendored.property-name"
+      ]
+    },
+    {
+      "color_code": "#CD3131",
+      "ansi_color": "RED_BRIGHT",
+      "ui_settings": [],
+      "scopes": [
+        "invalid",
+        "token.error-token"
+      ]
+    },
+    {
+      "color_code": "#A31515",
+      "ansi_color": "RED",
+      "ui_settings": [],
+      "scopes": [
+        "markup.deleted",
+        "meta.embedded.assembly",
+        "meta.preprocessor.string",
+        "string"
+      ]
+    },
+    {
+      "color_code": "#0451A5",
+      "ansi_color": "BLUE",
+      "ui_settings": [],
+      "scopes": [
+        "constant.other.color.rgb-value",
+        "constant.other.rgb-value",
+        "markup.changed",
+        "meta.structure.dictionary.key.python",
+        "punctuation.definition.list.begin.markdown",
+        "punctuation.definition.quote.begin.markdown",
+        "support.constant.color",
+        "support.constant.font-name",
+        "support.constant.media",
+        "support.constant.media-type",
+        "support.constant.property-value",
+        "support.function.git-rebase",
+        "support.type.property-name.json"
+      ]
+    },
+    {
+      "color_code": "#AF00DB",
+      "ansi_color": "MAGENTA_BRIGHT",
+      "ui_settings": [],
+      "scopes": [
+        "entity.name.operator",
+        "keyword.control",
+        "keyword.other.directive.using",
+        "keyword.other.operator",
+        "keyword.other.using",
+        "source.cpp keyword.operator.delete",
+        "source.cpp keyword.operator.new"
+      ]
+    },
+    {
+      "color_code": "#795E26",
+      "ansi_color": "YELLOW",
+      "ui_settings": [],
+      "scopes": [
+        "entity.name.function",
+        "entity.name.operator.custom-literal",
+        "source.powershell variable.other.member",
+        "support.constant.handlebars",
+        "support.function"
+      ]
+    },
+    {
+      "color_code": "#267F99",
+      "ansi_color": "CYAN",
+      "ui_settings": [],
+      "scopes": [
+        "entity.name.class",
+        "entity.name.namespace",
+        "entity.name.scope-resolution",
+        "entity.name.type",
+        "entity.other.attribute",
+        "entity.other.inherited-class",
+        "meta.type.cast.expr",
+        "meta.type.new.expr",
+        "storage.type.annotation.groovy",
+        "storage.type.annotation.java",
+        "storage.type.boolean.go",
+        "storage.type.byte.go",
+        "storage.type.cs",
+        "storage.type.error.go",
+        "storage.type.generic.cs",
+        "storage.type.generic.groovy",
+        "storage.type.generic.java",
+        "storage.type.groovy",
+        "storage.type.java",
+        "storage.type.modifier.cs",
+        "storage.type.numeric.go",
+        "storage.type.object.array.groovy",
+        "storage.type.object.array.java",
+        "storage.type.parameters.groovy",
+        "storage.type.primitive.array.groovy",
+        "storage.type.primitive.array.java",
+        "storage.type.primitive.groovy",
+        "storage.type.primitive.java",
+        "storage.type.rune.go",
+        "storage.type.string.go",
+        "storage.type.token.java",
+        "storage.type.uintptr.go",
+        "storage.type.variable.cs",
+        "support.class",
+        "support.constant.dom",
+        "support.constant.json",
+        "support.constant.math",
+        "support.type"
+      ]
+    },
+    {
+      "color_code": "#001080",
+      "ansi_color": "BLUE",
+      "ui_settings": [],
+      "scopes": [
+        "constant.other.placeholder",
+        "entity.name.variable",
+        "meta.definition.variable.name",
+        "meta.object-literal.key",
+        "support.variable",
+        "variable"
+      ]
+    },
+    {
+      "color_code": "#D16969",
+      "ansi_color": "RED_BRIGHT",
+      "ui_settings": [],
+      "scopes": [
+        "keyword.operator.negation.regexp",
+        "punctuation.character.set.begin.regexp",
+        "punctuation.character.set.end.regexp",
+        "punctuation.definition.character-class.regexp",
+        "punctuation.definition.group.assertion.regexp",
+        "punctuation.definition.group.regexp",
+        "support.other.parenthesis.regexp"
+      ]
+    },
+    {
+      "color_code": "#EE0000",
+      "ansi_color": "RED_BRIGHT",
+      "ui_settings": [],
+      "scopes": [
+        "constant.character.escape",
+        "keyword.control.anchor.regexp",
+        "keyword.operator.or.regexp"
+      ]
+    },
+    {
+      "color_code": "#569CD6",
+      "ansi_color": "CYAN_BRIGHT",
+      "ui_settings": [],
+      "scopes": [
+        "keyword.control.region"
+      ]
+    },
+    {
+      "color_code": "#316BCD",
+      "ansi_color": "BLUE",
+      "ui_settings": [],
+      "scopes": [
+        "token.info-token"
+      ]
+    },
+    {
+      "color_code": "#CD9731",
+      "ansi_color": "YELLOW",
+      "ui_settings": [],
+      "scopes": [
+        "token.warn-token"
+      ]
+    },
+    {
+      "color_code": "#800080",
+      "ansi_color": "MAGENTA",
+      "ui_settings": [],
+      "scopes": [
+        "token.debug-token"
+      ]
+    }
+  ]
+}

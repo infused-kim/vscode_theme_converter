@@ -105,7 +105,7 @@ class AnsiColor:
         self, bgcolor: str | None = None
     ) -> Style | Literal['normal']:
         """Return a rich style for this color and set background color."""
-        color = f'color({self.num})'
+        color: str | Color = f'color({self.num})'
 
         if self.num < 0:
             if self.color_code is not None:
@@ -113,7 +113,7 @@ class AnsiColor:
             else:
                 color = Color.default()
 
-        style = Style(color=color, bgcolor=bgcolor)
+        style: Style | Literal['normal'] = Style(color=color, bgcolor=bgcolor)
 
         if style == Style():
             style = 'normal'
@@ -151,13 +151,6 @@ class AnsiColor:
         if self.is_bright:
             return self.from_num(cast(AnsiColorNum, self.num - 8))
         return self
-
-    @property
-    def ansi_hex(self) -> str:
-        """
-        Get the hex code that encodes this ANSI color number.
-        """
-        return f'#{self.num:02x}000000'
 
     @property
     def sort_order_by_family(self) -> int:
@@ -322,7 +315,7 @@ class ColorMapping(BaseModel):
         """Serialize AnsiColor to string."""
         if ansi_color is None:
             return None
-        return cast(str, ansi_color.name)
+        return ansi_color.name
 
 
 class AnsiMapping(BaseModel):

@@ -9,7 +9,6 @@ from .contrast import get_contrast_ratio, get_contrast_ratio_rating
 from .converter_vsc_tm import convert_vscode_theme_to_tm_theme
 from .terminal import (
     get_terminal_background_color,
-    get_terminal_foreground_color,
 )
 from .vscode_theme import VSCodeTheme
 
@@ -45,14 +44,16 @@ def convert(
     # Load theme
     theme = VSCodeTheme.from_json(input_file)
 
+    # Convert
+    tm_theme = convert_vscode_theme_to_tm_theme(theme)
+
     # Apply ANSI mapping if provided
     if ansi_mapping:
         mapping = AnsiMapping.load_json(ansi_mapping)
-        theme = theme.apply_ansi_mapping(mapping)
+        tm_theme = tm_theme.apply_ansi_mapping(mapping)
         typer.echo('Applied ANSI color mapping')
 
-    # Convert and save
-    tm_theme = convert_vscode_theme_to_tm_theme(theme)
+    # Save
     tm_theme.to_tm_theme(output_file)
     typer.echo(f'Successfully converted {input_file} to {output_file}')
 
@@ -189,7 +190,6 @@ def print_terminal_colors() -> None:
 
     # Get terminal colors
     bg_color_code = get_terminal_background_color()
-    fg_color_code = get_terminal_foreground_color()
 
     # Print each color family
     for color in AnsiColor.iter_by_family():

@@ -4,9 +4,15 @@ This tool allows you to convert VSCode editor themes to terminal apps, such as `
 
 It can create themes that look great on both dark and light terminals by mapping the theme colors to ANSI-16 colors.
 
-Take a look at this video where I cycle through multiple Ghostty terminal themes, but use the same `bat` theme:
+Take a look at this video where I cycle through multiple Ghostty terminal themes:
 
 https://github.com/user-attachments/assets/cb415062-e9ee-4026-b62e-e3d990fe9f3a
+
+The important part is that the `bat` theme doesn't change in this video. Only the theme of the terminal app changes.
+
+And yet, the content is readable in all themes. Not all of them look _great_, but that's on the terminal theme's author ;).
+
+Another benefit is that by using ANSI colors, all the colors between all your terminal apps will be consistent. Your prompt, your ls output, your editor... they will all use the same tones of color.
 
 ## Table of Contents
 
@@ -31,7 +37,7 @@ https://github.com/user-attachments/assets/cb415062-e9ee-4026-b62e-e3d990fe9f3a
 
 The best way to answer this question is to demonstrate the problems that can arise when you use RGB colors in your terminal.
 
-This is how the popular `cat` replacement `bat` looked like in the default terminal app on macOS for many years:
+This is how `bat`, the popular `cat` replacement, looked like in the default terminal app on macOS for many years:
 
 ![Screenshot of bat in the default macOS terminal](img/bat_macos_default_terminal.png)
 
@@ -168,29 +174,29 @@ vscode_theme_converter ansi-map-gen "vscode-theme-compiled.json" "vscode-theme-a
 
 This will generate a JSON file like this:
 
-```json
+```jsonc
 {
   "theme_name": "light_modern_compiled",
   "color_mappings": [
- {
-      "color_code": "#000000",
-      "ansi_color": null,
-      "scopes": [
-        "entity.name.label",
-        "keyword.operator",
-        "keyword.operator.quantifier.regexp",
-        "meta.embedded",
-        "meta.template.expression",
-        "source.groovy.embedded",
-        "storage.modifier.import.java",
-        "storage.modifier.package.java",
-        "string meta.image.inline.markdown",
-        "variable.language.wildcard.java",
-        "variable.legacy.builtin.python"
- ]
- },
+    {
+        "color_code": "#000000",
+        "ansi_color": null,
+        "scopes": [
+            "entity.name.label",
+            "keyword.operator",
+            "keyword.operator.quantifier.regexp",
+            "meta.embedded",
+            "meta.template.expression",
+            "source.groovy.embedded",
+            "storage.modifier.import.java",
+            "storage.modifier.package.java",
+            "string meta.image.inline.markdown",
+            "variable.language.wildcard.java",
+            "variable.legacy.builtin.python"
+        ]
+    },
     // [...]
- ]
+  ]
 }
 ```
 
@@ -200,21 +206,21 @@ You can use the following values for `ansi_color`:
 
 - `FOREGROUND` (default terminal text color)
 - `BLACK`
-- `BRIGHT_BLACK`
+- `BLACK_BRIGHT`
 - `RED`
-- `BRIGHT_RED`
+- `RED_BRIGHT`
 - `GREEN`
-- `BRIGHT_GREEN`
+- `GREEN_BRIGHT`
 - `YELLOW`
-- `BRIGHT_YELLOW`
+- `YELLOW_BRIGHT`
 - `BLUE`
-- `BRIGHT_BLUE`
+- `BLUE_BRIGHT`
 - `MAGENTA`
-- `BRIGHT_MAGENTA`
+- `MAGENTA_BRIGHT`
 - `CYAN`
-- `BRIGHT_CYAN`
+- `CYAN_BRIGHT`
 - `WHITE`
-- `BRIGHT_WHITE`
+- `WHITE_BRIGHT`
 
 Once you have added the mappings to the `JSON` file, you can use the following command to preview the ANSI mapping...
 
@@ -239,17 +245,3 @@ vscode_theme_converter convert "vscode-theme-compiled.json" "vscode-theme.tmThem
 ```
 
 This will generate a tmTheme file that you can use with bat in your terminal.
-- [1. Why you should consider using ANSI-16 colors in your terminal](#1-why-you-should-consider-using-ansi-16-colors-in-your-terminal)
-  - [1.1. What's the problem with RGB colors?](#11-whats-the-problem-with-rgb-colors)
-  - [1.2. What are ANSI-16 colors and how do they solve the problem?](#12-what-are-ansi-16-colors-and-how-do-they-solve-the-problem)
-- [2. Converted Themes](#2-converted-themes)
-  - [2.1. VSCode Light Modern](#21-vscode-light-modern)
-- [3. Usage Instructions](#3-usage-instructions)
-  - [3.1. Install](#31-install)
-  - [3.2. Convert a VSCode Theme to tmTheme (Bat, TextMate, Sublime Text, etc.)](#32-convert-a-vscode-theme-to-tmtheme-bat-textmate-sublime-text-etc)
-    - [3.2.1. Generate a "compiled" VSCode theme file](#321-generate-a-compiled-vscode-theme-file)
-    - [3.2.2. Convert the theme file](#322-convert-the-theme-file)
-  - [3.3. Create an ANSI theme](#33-create-an-ansi-theme)
-    - [3.3.1. Inspect your terminal's colors](#331-inspect-your-terminals-colors)
-    - [3.3.2. Map your theme's RGB colors to ANSI colors](#332-map-your-themes-rgb-colors-to-ansi-colors)
-    - [3.3.3. Generate the ANSI theme file](#333-generate-the-ansi-theme-file)

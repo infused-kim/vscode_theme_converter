@@ -4,6 +4,8 @@ This tool allows you to convert VSCode editor themes to terminal apps, such as `
 
 It can create themes that look great on both dark and light terminals by mapping the theme colors to ANSI-16 colors.
 
+Take a look at this video where I cycle through multiple Ghostty terminal themes, but use the same `bat` theme:
+
 ## Table of Contents
 
 - [1. Why you should consider using ANSI-16 colors in your terminal](#1-why-you-should-consider-using-ansi-16-colors-in-your-terminal)

@@ -162,7 +162,7 @@ def print_terminal_colors() -> None:
     """Show how the current terminal colors look."""
 
     def print_color(
-        color_code: str,
+        color_code: str | None,
         bg_color_code: str | None,
         style: Style | str,
         title: str,
@@ -177,6 +177,9 @@ def print_terminal_colors() -> None:
             contrast_ratio = get_contrast_ratio(color_code, bg_color_code)
             contrast_rating = get_contrast_ratio_rating(contrast_ratio)
             contrast_info = f'\t→ {contrast_ratio:4.1f} ({contrast_rating})'
+
+        if color_code is None:
+            color_code = 'Unknown'
 
         # Print the color info
         rprint(
@@ -194,7 +197,7 @@ def print_terminal_colors() -> None:
     # Print each color family
     for color in AnsiColor.iter_by_family():
         print_color(
-            color.color_code_title,
+            color.color_code,
             bg_color_code,
             color.rich_style,
             color.title,
